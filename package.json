@@ -1,0 +1,11 @@
+{
+  "name": "billing-engine",
+  "version": "1.0.0",
+  "description": "system that track billing",
+  "main": "index.js",
+  "scripts": {
+    "test": "test-cov"
+  },
+  "author": "",
+  "license": "ISC"
+}
