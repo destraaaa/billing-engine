@@ -17,4 +17,8 @@ export class LoanRepository {
   async findOneUsingFilter(filter: object): Promise<Loan> {
     return this.model.findOne(filter).exec();
   }
+
+  async updateOneUsingFilter(filter:object, loan: Partial<Loan>, session?: ClientSession) {
+    return this.model.updateOne(filter, {...loan}).exec();
+  }
 }

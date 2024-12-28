@@ -121,6 +121,9 @@ export class LoanService {
         const billToPayCount = amount / nextDue.amountPerBill;
         const paidBills = await this.loanBillService.getBillsFromLoanAndSeqNum(loan, nextDue.firstBillSeqNum, nextDue.firstBillSeqNum + billToPayCount - 1);
         const payBills = await this.loanBillService.payBills(loan, nextDue.firstBillSeqNum, nextDue.firstBillSeqNum + billToPayCount - 1, session);
+        if(nextDue.firstBillSeqNum + billToPayCount - 1 == loan.tenure) {
+            await this.loanRepository.updateOneUsingFilter({userId: userId}, {isSettled: true});
+        }
         return this.loanRepaymentService.newLoanRepayment(loan.userId, amount, paidBills, session);
     } catch (error) {
         await session.abortTransaction();

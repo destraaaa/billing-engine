@@ -11,6 +11,6 @@ export class LoanRepaymentRepository {
   ) {}
 
   async create(loanRepayment: LoanRepayment, session?:ClientSession): Promise<LoanRepayment[]> {
-    return this.model.create([loanRepayment], {session});
+    return await this.model.create([loanRepayment], {session});
   }
 }

@@ -21,6 +21,7 @@ export class LoanRepaymentService {
       amount: amount,
       loanBills: loanBills.map((loanBill) => loanBill['_id']),  
     }
-    return this.loanRepaymentRepository.create(loanRepayment, session);
+    const rep = await this.loanRepaymentRepository.create(loanRepayment, session);
+    return rep;
   }
 }
