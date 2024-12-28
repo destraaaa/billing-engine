@@ -1,99 +1,104 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Billing Engine
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A simple Node.js application that represents a billing system. Basically the job of a billing engine is to provide the
+- Loan schedule for a given loan( when am i supposed to pay how much)
+- Outstanding Amount for a given loan
+- Status of weather the customer is Delinquent or not 
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## Features
+- Create new Loan
+- Get info from a loan of a user, determine next payment, how much to pay, and whether the borrower is delinquent
+- Make Payment
+---
+## Prerequisites
+Before running the project, ensure you have the following installed:
+1. **Node.js** (v18 or higher) Download it from the [Node.js Official Website](https://nodejs.org/).
+2. **MongoDB** Download and run the latest version from the [Community Website](https://www.mongodb.com/try/download/community) 
+---
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Installation
+### Step 1: Download the ZIP file and extract it 
 
-## Project setup
-
+### Step 2: Navigate to the Project Folder
 ```bash
-$ npm install
+cd billing-engine
 ```
 
-## Compile and run the project
-
+### Step 3: Install Dependencies
 ```bash
-# development
-$ npm run start
+npm install
+```
+---
+## Usage
 
-# watch mode
-$ npm run start:dev
+### Run the Program
+To run the program, execute the following command:
+```bash
+npm run start
+```
+This will open port 3000 on your local machine and you will be able to call the APIs through it.
 
-# production mode
-$ npm run start:prod
+### APIs
+### Make a New Loan
+This is an API to initiate a loan for a user. This example depicts how to create 5 million IDR loan for user abc-1234
+```bash
+  curl --location 'localhost:3000/loan' \
+--header 'user-id: abc-1234' \
+--header 'Content-Type: application/json' \
+--data '{
+    "amount":5000000,
+    "tenure": 50,
+    "interval": "Weekly"
+}'
 ```
 
-## Run tests
 
+### Get Loan Details
+This is an API to see details from a loan by a user.
+There is an optional `current-date` query param there. This is to simulate the current date of the system. If you omit this param, the system will assume the date to `new Date()`
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+curl --location 'localhost:3000/loan?current-date=2025-01-12' \
+--header 'user-id: abc-1234' \
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
+### Make Payment to a Loan
+This is an API to make payment, and in effect chnges the status of the bills.
+Similar to Get Loan Details, there is an optional `current-date` query param there. This is to simulate the current date of the system. If you omit this param, the system will assume the date to `new Date()`
 ```bash
-$ npm install -g mau
-$ mau deploy
+curl --location 'localhost:3000/loan/make-payment?current-date=2025-01-12' \
+--header 'user-id: abc-1234' \
+--header 'Content-Type: application/json' \
+--data '{
+    "amount":330000
+}'
+```
+Please note that the `amount` is assumed to be equals to `payableAmount` field in the Get Loan Details API.
+This is written in the problem statement:
+> assume that borrower can only pay the exact amount of payable that week or not pay at all 
+
+---
+
+## Development
+
+### Run Unit Tests
+
+To ensure everything is working correctly, run the unit tests:
+```bash
+npm run test:cov
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Modify the Code
 
-## Resources
+The source code is modularized into:
 
-Check out a few resources that may come in handy when working with NestJS:
+1.  **Loan**: Located in `src/modules/loan`
+2.  **LoanBill**: Located in `src/modules/loan-bill`
+3.  **LoanRepayment**: Located in `src/modules/loan-repayment`
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Each represents the data model stored in the DB. All business logic exist in the `xx.service.ts` in each respective file. 
 
 ## Support
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+If you encounter any issues or have questions, feel free to contact the author at `destra.bintang.perkasa@gmail.com`.
